@@ -6,6 +6,7 @@ class HomeController
 {
     public function index()
     {
-       view("index");
+        $array=["name"=>"mvc"];
+       view("index",$array);
     }
 }
