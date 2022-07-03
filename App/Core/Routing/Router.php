@@ -3,6 +3,7 @@
 namespace App\Core\Routing;
 
 use App\Core\Request;
+use App\Middleware\GlobalMiddleware;
 
 class Router
 {
@@ -13,7 +14,12 @@ class Router
         $this->request=new Request();
         $this->routes=Route::routes();
         $this->current_route=$this->findRoute($this->request)??null;
+        
+        $this->run_global_middleware();
+        $this->run_route_middleware();
     }
+    
+    
 
     private function findRoute(Request $request){
 
@@ -65,6 +71,21 @@ class Router
                 throw new \Exception("method $method not exists on class $controller");
             $controller->{$method}();
         }
+    }
+
+    private function run_route_middleware()
+    {
+       $middlewares=$this->current_route["middleware"];
+       foreach ($middlewares as $middleware){
+           $middleware_class="App\Middleware\\".$middleware;
+           $middleware_object=new $middleware_class();
+           $middleware_object->handle();
+       }
+    }
+
+    private function run_global_middleware()
+    {
+        $blobalMiddleware=new GlobalMiddleware();
     }
 }
 
