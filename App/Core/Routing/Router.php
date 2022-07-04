@@ -14,9 +14,9 @@ class Router
         $this->request=new Request();
         $this->routes=Route::routes();
         $this->current_route=$this->findRoute($this->request)??null;
-        
-        $this->run_global_middleware();
-        $this->run_route_middleware();
+
+//        $this->run_global_middleware();
+//        $this->run_route_middleware();
     }
     
     
@@ -24,8 +24,15 @@ class Router
     private function findRoute(Request $request){
 
         foreach ($this->routes as $route){
-            if(in_array($request->method(),$route["methods"]) and  $request->uri()==$route["uri"]){
-              return $route;
+            if(!in_array($request->method(),$route["methods"]) ){
+                die("notification");
+              return false;
+            }
+
+            
+            if($this->regex_matched($route)){
+
+                return $route;
             }
 
         }
@@ -40,6 +47,7 @@ class Router
     }
     public function run()
     {
+
       if(is_null($this->current_route)){
         $this->dispatch404();
       }
@@ -48,6 +56,8 @@ class Router
 
 
     private function dispatch($route){
+
+
         $action=$route["action"];
         if(is_null($action) || empty($action)){
             return;
@@ -75,7 +85,8 @@ class Router
 
     private function run_route_middleware()
     {
-       $middlewares=$this->current_route["middleware"];
+       $middlewares=$this->current_route["middleware"]??[];
+
        foreach ($middlewares as $middleware){
            $middleware_class="App\Middleware\\".$middleware;
            $middleware_object=new $middleware_class();
@@ -86,6 +97,24 @@ class Router
     private function run_global_middleware()
     {
         $blobalMiddleware=new GlobalMiddleware();
+    }
+
+    private function regex_matched(mixed $route)
+    {
+        global $request;
+        $pattern="/^".str_replace(["/","{","}"],["\/","(?<",">[-%\w]+)"],$route['uri'])."$/";
+        $result=preg_match($pattern,$this->request->uri(),$matches);
+        if(!$result){
+            return false;
+        }
+
+        foreach($matches as $key => $value){
+            if(! is_int($key)){
+                $request->add_route_parame($key,$value);
+            }
+    }
+
+        return true;
     }
 }
 

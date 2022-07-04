@@ -10,11 +10,15 @@ class Request
      * @var mixed
      */
 
-    private $method,$ip,$agent,$params;
+    private $method,$ip,$agent,$params,$route_parames;
     /**
      * @var false|string
      */
     private $uri;
+    /**
+     * @var mixed|null
+     */
+    private mixed $route_params;
 
     public function __construct()
     {
@@ -23,6 +27,7 @@ class Request
         $this->agent=$_SERVER["HTTP_USER_AGENT"];
         $this->method=strtolower($_SERVER["REQUEST_METHOD"]);
         $this->uri=strtok($_SERVER["REQUEST_URI"],"?");
+        $this->route_params=[];
     }
 
     public function input($key)
@@ -59,4 +64,27 @@ class Request
     {
         return $this->params[$name] ?? null;
     }
+
+    public function add_route_parame(string $key, mixed $value)
+    {
+        $this->route_params[$key] = $value;
+    }
+
+
+    public function getRouteParame($key)
+    {
+        return $this->route_params[$key];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRouteParams(): mixed
+    {
+        return $this->route_params;
+    }
+
+
+
+
 }
