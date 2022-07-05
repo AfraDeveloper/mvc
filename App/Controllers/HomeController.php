@@ -6,6 +6,7 @@ class HomeController
 {
     public function index()
     {
+        global $request;
         $array=["name"=>"mvc"];
        view("index",$array);
     }
@@ -14,7 +15,7 @@ class HomeController
     {
         global $request;
 
-        dd($request->getRouteParame("slug"));
+        var_dump($request->input("name"));
     }
 
     public function comment()

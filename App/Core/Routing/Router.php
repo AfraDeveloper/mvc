@@ -14,9 +14,8 @@ class Router
         $this->request=new Request();
         $this->routes=Route::routes();
         $this->current_route=$this->findRoute($this->request)??null;
-
-//        $this->run_global_middleware();
-//        $this->run_route_middleware();
+        $this->run_global_middleware();
+        $this->run_route_middleware();
     }
     
     
@@ -25,11 +24,9 @@ class Router
 
         foreach ($this->routes as $route){
             if(!in_array($request->method(),$route["methods"]) ){
-                die("notification");
-              return false;
+              continue;
             }
 
-            
             if($this->regex_matched($route)){
 
                 return $route;
@@ -56,9 +53,7 @@ class Router
 
 
     private function dispatch($route){
-
-
-        $action=$route["action"];
+        $action=$route["action"]??null;
         if(is_null($action) || empty($action)){
             return;
         }
@@ -85,7 +80,7 @@ class Router
 
     private function run_route_middleware()
     {
-       $middlewares=$this->current_route["middleware"]??[];
+       $middlewares=$this->current_route["middleware"];
 
        foreach ($middlewares as $middleware){
            $middleware_class="App\Middleware\\".$middleware;
@@ -96,7 +91,8 @@ class Router
 
     private function run_global_middleware()
     {
-        $blobalMiddleware=new GlobalMiddleware();
+        $globalMiddleware=new GlobalMiddleware();
+        $globalMiddleware->handle();
     }
 
     private function regex_matched(mixed $route)

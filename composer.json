@@ -21,6 +21,9 @@
         }
     ],
     "require": {
-        "vlucas/phpdotenv": "^5.4"
+        "vlucas/phpdotenv": "^5.4",
+      "ext-pdo": "*",
+        "catfan/medoo": "^2.1",
+        "opis/database": "^4.0"
     }
 }

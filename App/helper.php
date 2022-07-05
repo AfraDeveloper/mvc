@@ -22,6 +22,11 @@ function str_contain($str,$needle,$case_sensitive){
     return $pos !== false;
 }
 
+function xss_clean( $value)
+{
+    return filter_var(htmlspecialchars($value),FILTER_UNSAFE_RAW);
+}
+
 function dd($message){
     echo "<pre style='width:98%; margin:1rem auto;background: #171616; color: azure;font-size: 18px; 
 border-radius: 8px;border: 1px solid crimson;border-left: 4px solid crimson;padding: 24px 8px'>";

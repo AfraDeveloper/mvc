@@ -22,6 +22,9 @@ class Request
 
     public function __construct()
     {
+        foreach ($_REQUEST as $key => $value){
+            $_REQUEST[$key]=xss_clean($value);
+        }
         $this->ip=$_SERVER["REMOTE_ADDR"];
         $this->params=$_REQUEST;
         $this->agent=$_SERVER["HTTP_USER_AGENT"];
